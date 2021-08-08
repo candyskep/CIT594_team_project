@@ -1,23 +1,24 @@
 package edu.upenn.cit594.processor;
 
-import java.util.List;
+import java.util.ArrayList;
 
-import edu.upenn.cit594.datamanagement.popReader;
+
+import edu.upenn.cit594.datamanagement.DataFrame;
+import edu.upenn.cit594.datamanagement.txtReader;
+
 
 public class Population {
-	protected popReader pop_reader;
-	public Population(popReader p) {
-		pop_reader=p;
+	protected DataFrame populationData;
+	public Population(String filename) {
+		this.populationData=txtReader.readPopulation(filename);
 	}
 	
 	public int get_total_population() {
-		List<List<Object>> populationlist=pop_reader.getpopulation();
+		ArrayList<Object> populationColumn=populationData.getCol("population");
 		int total_population=0;
-		for (List<Object> zip_pop:populationlist) {
-			String zip=(String) zip_pop.get(0);
-			if(zip_pop.get(1)!=null) {
-				int pop=(Integer) zip_pop.get(1);
-				total_population+=pop;
+		for (Object zip_pop:populationColumn) {
+			if(zip_pop!=null) {
+				total_population+=(Integer) zip_pop;
 			}
 		}
 		

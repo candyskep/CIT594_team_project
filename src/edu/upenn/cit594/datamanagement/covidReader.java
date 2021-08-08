@@ -3,6 +3,8 @@ package edu.upenn.cit594.datamanagement;
 import java.util.ArrayList;
 
 public class covidReader {
+	
+	
 	ArrayList<Object> zipcode=new ArrayList<>();
 	ArrayList<Object> deaths=new ArrayList<>();
 	ArrayList<Object> hospitalized=new ArrayList<>();

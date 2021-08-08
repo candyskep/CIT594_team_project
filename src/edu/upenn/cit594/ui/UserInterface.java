@@ -8,6 +8,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import edu.upenn.cit594.datamanagement.DataFrame;
 import edu.upenn.cit594.processor.DeathRate;
 import edu.upenn.cit594.processor.Population;
 
@@ -15,8 +16,8 @@ public class UserInterface {
 	protected Scanner input;
 	Population population;
 	
-	public UserInterface(Population population) { // adding more processors 
-		this.population=population;
+	public UserInterface(Population pop) { // adding more processors 
+		this.population=pop;
 		input = new Scanner(System.in);
 	}
 	
@@ -24,11 +25,13 @@ public class UserInterface {
 		
 		while(true) {
 			String choice=null;
-			System.out.flush(); 
+			 
 			System.out.println("\nPress the number for result: \n"
 					+ "0: Exit Program\n"+"1: get total population\n"+"2:get total vaccinations per capita for each ZIP Code\n"
 					+"3:get average market value for a ZIP Code\n"+"4:get the average total liavalbe area for a ZIP Code\n"
 					+"5:get the total residential market value per capita for a ZIP code\n"+"6.get the death rate for a ZIP Code\n");
+		    System.out.print(">");
+			System.out.flush();
 			choice=input.nextLine();
 			Pattern p=Pattern.compile("^([0-6])\s*$");
 			Matcher m=p.matcher(choice);
@@ -148,7 +151,8 @@ public class UserInterface {
 	
 	public void doCase6() {
 		String zipcode=promptZIPinput();
-		DeathRate.getDeathRate(cr, zipcode);
+		//double deathrate=DeathRate.getDeathRate(cr, zipcode);//need covidreader as input
+		System.out.println("The death rate is:");
 		input.nextLine();
 		//get hospital 
 	}
