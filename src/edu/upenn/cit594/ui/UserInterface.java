@@ -4,20 +4,30 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import edu.upenn.cit594.datamanagement.DataFileReader;
 import edu.upenn.cit594.datamanagement.DataFrame;
-import edu.upenn.cit594.processor.DeathRate;
+import edu.upenn.cit594.processor.CityIndex;
+import edu.upenn.cit594.processor.LivableArea;
+import edu.upenn.cit594.processor.MarketValue;
 import edu.upenn.cit594.processor.Population;
 
 public class UserInterface {
 	protected Scanner input;
-	Population population;
+	DataFileReader data;
+	DataFrame df_population;
+	DataFrame df_property;
+	DataFrame df_covid;
 	
-	public UserInterface(Population pop) { // adding more processors 
-		this.population=pop;
+	public UserInterface(DataFileReader data) { // adding more processors 
+		this.data=data;
+		df_population=data.getPopulationData();
+		df_property=data.getPropertyData();
+		df_covid=data.getCovidData();
 		input = new Scanner(System.in);
 	}
 	
@@ -47,7 +57,7 @@ public class UserInterface {
 				System.out.println("Thanks for using!");
 				System.exit(0);
 			case "1":
-				System.out.println(population.get_total_population());
+				System.out.println(Population.get_total_population(data));
 				continue;
 			case "2":
 				doCase2();
@@ -71,6 +81,7 @@ public class UserInterface {
 		}
 	}
 	
+	
 	public void doCase2() {
 		String choice=null;
 		while(true) {
@@ -80,7 +91,6 @@ public class UserInterface {
 			Matcher m=p.matcher(choice);
 			if(!m.find()) {
 				System.out.println("Wrong input, try again!");
-				//input.nextLine();
 				continue;
 			}else {
 				choice=m.group(1);
@@ -99,23 +109,35 @@ public class UserInterface {
 		}	
 	}
 	
+	/**
+	 * Because there are more zipcodes in property.csv than in population.txt, I think when we want to check if the zip keyed in by user exists in the relevant files, 
+	 * we need to pass the relevant dataframe to the prompt function, such that the function knows which zipcode column it should check against. 
+	 * @param df
+	 * @return
+	 */
+	public String promptZIPinput(DataFrame df) {
 	
-	public String promptZIPinput() {
-		int zipnum=0;
 		String zipcode;   
-		List<String> allZip=new ArrayList<String>();////read in the ZIP arraylist
-		String []temp={"123","456","789"};////read in the ZIP arraylist
-		allZip=Arrays.asList(temp);////read in the ZIP arraylist
+		ArrayList<Object> allZip=df.getCol("zip_code");////read in the ZIP arraylist
 		while(true) {
 			System.out.println("\nPlease input a ZIP code: \n");
-			try{
-				zipnum=input.nextInt();
-			}catch (InputMismatchException e) {
-				System.out.println("Your input is wrong, please input a valid ZIP number\n");
-				input.nextLine();
-				continue;
-			}
-			zipcode=String.valueOf(zipnum);
+			//try{
+				zipcode=input.nextLine();
+				Pattern p=Pattern.compile("^([0-9]+)\\s*$");
+				Matcher m=p.matcher(zipcode);
+				if(m.find()) {
+					zipcode=m.group(1);
+				}else {
+					System.out.println("Your input is wrong, please input a valid ZIP number\n");
+					//input.nextLine();
+					continue;
+				}
+			//}catch (InputMismatchException e) {
+			//	System.out.println("Your input is wrong, please input a valid ZIP number\n");
+			//	input.nextLine();
+			//	continue;
+			//}
+			
 			if(allZip.contains(zipcode)) {
 				break;
 			}else {
@@ -129,32 +151,34 @@ public class UserInterface {
 		
 		
 	public void doCase3() {
-		String zipcode=promptZIPinput();
+		String zipcode=promptZIPinput(df_property);
 		input.nextLine();
-		//doCase 3 function////////////////////////////
-		System.out.println("The average market value is:");	
+		double mv=MarketValue.getAvgMarketValue(data, zipcode);
+		System.out.println("The average market value is:"+mv);	
 	}
 	
 	public void doCase4() {
-		String zipcode=promptZIPinput();
+		String zipcode=promptZIPinput(df_property);
 		input.nextLine();
-		//doCase 4 function////////////////////////////
-		System.out.println("The average total liavalbe area is:");	
+		double avgLivableArea=LivableArea.getAvgLivableArea(data, zipcode);
+		System.out.println("The average total liavalbe area is:"+avgLivableArea);	
 	}
 	
 	public void doCase5() {
-		String zipcode=promptZIPinput();
+		String zipcode=promptZIPinput(df_population);
 		input.nextLine();
 		//doCase 5 function//////
 		System.out.println("The total residential market value per capita is:");
 	}
 	
 	public void doCase6() {
-		String zipcode=promptZIPinput();
-		//double deathrate=DeathRate.getDeathRate(cr, zipcode);//need covidreader as input
-		System.out.println("The death rate is:");
-		input.nextLine();
-		//get hospital 
+		Map<Integer,String> cityRank=CityIndex.getCityRank(data);
+		System.out.println("\tCity Index\t\tZipCode");
+		for(int i:cityRank.keySet()) {
+			for(String zip:cityRank.values()) {
+				System.out.println("\t"+i+"\t\t"+zip);
+			}
+		}
 	}
 
 }

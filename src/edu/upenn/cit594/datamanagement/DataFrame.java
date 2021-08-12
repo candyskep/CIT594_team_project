@@ -6,6 +6,9 @@ public class DataFrame {
 	// Data storage and variables
 	ArrayList<String> headers = new ArrayList<String>();
 	ArrayList<ArrayList<Object>> data = new ArrayList<ArrayList<Object>>();
+	
+	
+	
 	int numCols = 0;
 	int numRows = 0;
 	
@@ -22,6 +25,13 @@ public class DataFrame {
 			numCols++;
 		}
 	}
+	
+	
+	public void setData(ArrayList<ArrayList<Object>> data) {
+		this.data = data;
+	}
+
+	
 	
 	/* Public method to add a row to the DataFrame
 	 * Assumes the array is sorted in the same order as headers. 
@@ -59,6 +69,7 @@ public class DataFrame {
 		
 		// Check index and return appropriately
 		int index = headers.indexOf(header);
+		//System.out.println("|"+headers.get(1)+"|       input=|"+header+"|");
 		if(index < 0) {
 			return null;
 		}
